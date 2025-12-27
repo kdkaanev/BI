@@ -1,0 +1,7 @@
+.venv/
+.xls
+.xlsx
+.DS_Store
+*.pyc
+__pycache__/
+db.sqlite3
