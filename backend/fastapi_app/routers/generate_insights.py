@@ -172,10 +172,12 @@ def kpi_rows_count(columns, rows):
     }
     
 def kpi_category_count(columns, rows):
+    print("Finding category column...", columns)
     category_col = None
     for c in columns:
-        if c("dtype") == "categorical" and c["name"].lower() in ["категория", "product_category", "category"]:
+        if c.get("dtype") == "categorical" and c["name"].lower() in ["категория", "product_category", "category"]:
             category_col = c["name"]
+            
             break   
     if not category_col:
         return None
@@ -575,8 +577,7 @@ def generate_insights(columns, rows):
 ]
 
 
-    print("COLUMNS:", columns)
-    print("ROWS SAMPLE:", rows[:3])
+ 
 
     if not columns or not rows:
         return [{
