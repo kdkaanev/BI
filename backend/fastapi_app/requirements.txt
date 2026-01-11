@@ -6,3 +6,4 @@ openpyxl
 python-dateutil
 pydantic
 aiofiles
+openai

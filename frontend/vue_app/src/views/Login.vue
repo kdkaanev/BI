@@ -13,6 +13,9 @@ const loginData = ref({
 function goUploadWizard() {
   router.push('/upload')
 }
+function goToRegister() {
+  router.push('/register')
+}
 
 
 const onLogin = async () => {
@@ -50,6 +53,7 @@ onMounted(() => {
       </div>
       <div class="actions">
         <button class="btn primary" type="submit">Login</button>
+        <button class="btn secondary" @click="goToRegister">Register</button>
       </div>
       </form>
      

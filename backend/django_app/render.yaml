@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: django_app
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn django_app.bi_dashboard.bi_dashboard:application --bind
+    envVars:
+      - key: DJANGO_
+        value: django_app.settings.production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bi_saas_db
+          property: connectionString

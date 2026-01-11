@@ -1,0 +1,13 @@
+/bi-saas
+|-- backend
+|   |--django_app
+|       |-- bi_dashboard
+|           |-- bi_dashboard
+|               |-- __init__.py
+|               |-- settings.py
+|               |-- wsgy.py  
+|           |-- manage.py
+|       |-- .env
+|       |-- Dockerfile
+|   |--fast_api
+|-- |--frontend

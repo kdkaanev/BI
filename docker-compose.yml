@@ -1,0 +1,55 @@
+
+
+services:
+  backend:
+    build: ./backend/django_app
+    container_name: bi_backend
+    env_file:
+      - backend/django_app/.env
+    command: gunicorn bi_dashboard.wsgi:application --bind 0.0.0.0:8000
+    #command: sleep infinity
+    volumes:
+      - ./backend/django_app:/application
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+  
+  fastapi:
+
+    build: ./backend/fastapi_app
+    container_name: bi_fastapi
+    env_file:
+      - backend/fastapi_app/.env
+    command: uvicorn main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    restart: always
+
+  frontend:
+    build: ./frontend/vue_app
+    container_name: bi_frontend
+    env_file:
+      - ./frontend/vue_app/.env
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: bi_db 
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bi_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    restart: always
+
+volumes:
+  pgdata:

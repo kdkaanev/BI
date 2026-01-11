@@ -28,7 +28,7 @@ onMounted(() => {
   <div id="app">
     <div class="nav">
 
-      <img alt="BI SaaS logo" class="logo" src="./assets/logo-bisass.svg" />
+      <img alt="BI SaaS logo" class="logo" src="./assets/logo.png" />
       <button v-if="authStore.getCurrentUser()" @click="logout">logout</button>
       <button v-else @click="router.push('/')">login</button>
     </div>

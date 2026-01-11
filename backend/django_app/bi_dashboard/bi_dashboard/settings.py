@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -26,19 +27,26 @@ SECRET_KEY = 'django-insecure-zv*uhywb*425s$#kp35rf#v=749s9&j3(qfy7cnso0aaf&x9l_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # CORS for local dev
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:80",
+    "http://0.0.0.0:8000",
+    "http://localhost:8080",
+    
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:80",
+    "http://localhost:8080"
 ]
 # Application definition
 SESSION_COOKIE_SAMESITE = "None"
@@ -115,6 +123,8 @@ WSGI_APPLICATION = 'bi_dashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+'''
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -125,7 +135,17 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-
+'''
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),  # ← db
+        "PORT": os.getenv("DB_PORT", "5432"),
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -163,6 +183,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Media files (for uploaded datasets)
@@ -176,7 +197,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 FASTAPI_ANALYZE_URL = "http://localhost:8001/insights/analyze/"
 
 # settings.py
-FASTAPI_URL = "http://localhost:8002"  # адресът на твоя FastAPI microservice
+FASTAPI_URL = os.getenv("FASTAPI_URL")  # адресът на твоя FastAPI microservice
 
 
 
