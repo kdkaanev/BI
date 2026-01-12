@@ -29,8 +29,8 @@ onMounted(() => {
     <div class="nav">
 
       <img alt="BI SaaS logo" class="logo" src="./assets/logo.png" />
-      <button v-if="authStore.getCurrentUser()" @click="logout">logout</button>
-      <button v-else @click="router.push('/')">login</button>
+      <button v-if="authStore.getCurrentUser()" @click="logout" class="btn primary">logout</button>
+    
     </div>
     <router-view />
   </div>
@@ -57,4 +57,17 @@ onMounted(() => {
   align-items: center;
   border-bottom: 1px solid #eee;
 }
+.btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
 </style>

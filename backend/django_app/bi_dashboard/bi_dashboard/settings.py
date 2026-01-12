@@ -197,7 +197,10 @@ MEDIA_ROOT = BASE_DIR / "media"
 FASTAPI_ANALYZE_URL = "http://localhost:8001/insights/analyze/"
 
 # settings.py
-FASTAPI_URL = os.getenv("FASTAPI_URL")  # адресът на твоя FastAPI microservice
+if DEBUG:
+    FASTAPI_URL = "http://localhost:8002"  # адресът на твоя FastAPI microservice за локално развитие
+else:
+    FASTAPI_URL = os.getenv("FASTAPI_URL")  # адресът на твоя FastAPI microservice
 
 
 

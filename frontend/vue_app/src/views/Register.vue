@@ -17,6 +17,10 @@
         
     )  
 
+    function goToLogin() {
+        router.push('/')
+    }
+
 
 
     const onRegister = async () => {
@@ -62,9 +66,71 @@
             <input type="password" id="confirmPassword" v-model="registerForm.confirmPassword" required />
             
             </div>
+            <div class="btn-group">
+            <button type="submit" class="btn primary">Register</button>
+            <p>If you already have an account, <button class="btn link" @click="goToLogin">Login</button></p>
+            </div>
             
-            <button type="submit" class="btn">Register</button>
+
         </form>
         </div>
     </div>
 </template>
+
+
+<style scoped>
+.page.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .card {
+    background: #fff;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+  
+  .form-group {
+    margin-bottom: 1em;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5em;
+  }
+  
+  input {
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 0.75em;
+    background-color: #42b983;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #369870;
+  }
+  .btn.link {
+    background: none;
+    color: #2563eb;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 1em;
+  }
+
+
+</style>
