@@ -123,10 +123,10 @@ WSGI_APPLICATION = 'bi_dashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-'''
+if DEBUG:
 
-DATABASES = {
-    "default": {
+    DATABASES = {
+        "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "bidb",
         "USER": "postgres",
@@ -134,9 +134,9 @@ DATABASES = {
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
-}
-'''
-DATABASES = {
+    }
+else:
+    DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("DB_NAME"),
