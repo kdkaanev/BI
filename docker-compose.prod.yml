@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    container_name: bi_db
+    env_file:
+      - backend/django_app/.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - bi_network
+    restart: always
+
+  backend:
+    build: ./backend/django_app
+    container_name: bi_backend
+    env_file:
+      - backend/django_app/.env
+    depends_on:
+      - db
+    networks:
+      - bi_network
+    restart: always
+
+
+  fastapi:
+    build: ./backend/fastapi_app
+    container_name: bi_fastapi
+    env_file:
+      - backend/fastapi_app/.env
+    networks:
+      - bi_network
+    restart: always
+
+
+  frontend:
+    build: ./frontend/vue_app
+    container_name: bi_frontend
+    env_file:
+      - ./frontend/vue_app/.env
+
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - bi_network
+    restart: always
+  
+volumes:
+  pgdata:
+
+networks:
+  bi_network:
+    driver: bridge
