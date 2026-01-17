@@ -1,56 +1,50 @@
-version: '3.9'
-
 services:
   db:
-    image: postgres:13
-    container_name: bi_db
+    image: postgres:15
+    restart: always
     env_file:
       - backend/django_app/.env
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - bi_network
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./backend/django_app
-    container_name: bi_backend
+    restart: always
     env_file:
       - backend/django_app/.env
     depends_on:
-      - db
-    networks:
-      - bi_network
-    restart: always
-
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+      python3 manage.py migrate &&
+      gunicorn bi_dashboard.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 3
+      "
+    expose:
+      - "8000"
 
   fastapi:
     build: ./backend/fastapi_app
-    container_name: bi_fastapi
+    restart: always
     env_file:
       - backend/fastapi_app/.env
-    networks:
-      - bi_network
-    restart: always
-
+    expose:
+      - "8001"
 
   frontend:
     build: ./frontend/vue_app
-    container_name: bi_frontend
-    env_file:
-      - ./frontend/vue_app/.env
-
-    ports:
-      - "80:80"
+    restart: always
     depends_on:
       - backend
-    networks:
-      - bi_network
-    restart: always
-  
+    ports:
+      - "80:80"
+
 volumes:
   pgdata:
-
-networks:
-  bi_network:
-    driver: bridge
