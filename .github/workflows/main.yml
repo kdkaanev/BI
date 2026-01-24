@@ -18,11 +18,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t bi-backend:${{ env.IMAGE_TAG }} .
+          docker build -t bi-backend:${{ github.sha }} ./backend/django_app
+          docker build -t bi-fastapi:${{ github.sha }} ./backend/fastapi_app
+          docker build -t bi-frontend:${{ github.sha }} ./frontend/vue_app
 
       - name: Save Docker image
         run: |
-          docker save bi-backend:${{ env.IMAGE_TAG }} | gzip > image.tar.gz
+           docker save bi-backend:${{ github.sha }} bi-fastapi:${{ github.sha }} bi-frontend:${{ github.sha }} | gzip > images.tar.gz
 
       - name: Copy image to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -42,5 +44,5 @@ jobs:
           script: |
             cd /root/BI
             docker load < image.tar.gz
-            export IMAGE_TAG=${{ env.IMAGE_TAG }}
+            export IMAGE_TAG=${{ github.sha }}
             docker compose -f docker-compose.prod.yml up -d --force-recreate
