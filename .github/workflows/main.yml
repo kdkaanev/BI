@@ -32,6 +32,15 @@ jobs:
           pwd
           ls -la 
 
+      - name: Ensure target dir exists on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:      
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            mkdir -p /root/BI
+
       - name: Copy image to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -39,7 +48,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           source: "/home/runner/work/BI/BI/images.tar.gz"
-          target: "/root/BI"
+          target: "/root/BI/"
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
