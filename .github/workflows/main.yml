@@ -13,7 +13,27 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Set image tag
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: |
+          docker build -t bi-backend:${{ env.IMAGE_TAG }} .
+
+      - name: Save Docker image
+        run: |
+          docker save bi-backend:${{ env.IMAGE_TAG }} | gzip > image.tar.gz
+
+      - name: Copy image to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "image.tar.gz"
+          target: "/root/BI"
+
+      - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -21,6 +41,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /root/BI
-            git pull
-            docker compose -f docker-compose.prod.yml build
-            docker compose -f docker-compose.prod.yml up -d
+            docker load < image.tar.gz
+            export IMAGE_TAG=${{ env.IMAGE_TAG }}
+            docker compose -f docker-compose.prod.yml up -d --force-recreate
