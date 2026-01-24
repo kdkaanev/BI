@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "workspace:"
           pwd
-          ls -la /github/workspace
+          ls -la 
 
       - name: Copy image to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -49,6 +49,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /root/BI
-            docker load < image.tar.gz
+            docker load < images.tar.gz
             export IMAGE_TAG=${{ github.sha }}
             docker compose -f docker-compose.prod.yml up -d --force-recreate
