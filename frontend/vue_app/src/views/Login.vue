@@ -41,7 +41,7 @@ onMounted(() => {
 <template>
   <div class="page center">
     <div class="card">
-      <h2>Welcome to BI SaaS (DEMO)</h2>
+      <h2>Welcome to BI SaaS (Demo)</h2>
       <form @submit.prevent="onLogin">
  <div class="field">
         <label for="username">Username:</label>
