@@ -41,14 +41,13 @@ jobs:
           script: |
             mkdir -p /root/BI
 
-      - name: Copy image to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          source: "/home/runner/work/BI/BI/images.tar.gz"
-          target: "/root/BI/"
+      - name: Upload images.tar.gz to VPS
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > key.pem
+          chmod 600 key.pem
+
+          scp -i key.pem -o StrictHostKeyChecking=no images.tar.gz \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/BI/images.tar.gz
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -57,7 +56,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker load < /root/images.tar.gz
+            docker load < /root/BI/images.tar.gz
 
             IMAGE_TAG=${{ github.sha }} docker compose -f /root/BI/docker-compose.prod.yml config | grep image
             IMAGE_TAG=${{ github.sha }} docker compose -f /root/BI/docker-compose.prod.yml up -d --force-recreate
