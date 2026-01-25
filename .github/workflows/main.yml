@@ -64,7 +64,7 @@ jobs:
 
             docker load < images.tar.gz
 
-            export IMAGE_TAG=${{ github.sha }}
+            echo "IMAGE_TAG=${{ github.sha }}" > .env
 
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d   
