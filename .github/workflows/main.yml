@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            mkdir -p /root/BI
+            mkdir -p /opt/BI
 
       - name: Upload images.tar.gz to VPS
         run: |
@@ -51,7 +51,7 @@ jobs:
           chmod 600 key.pem
 
           scp -i key.pem -o StrictHostKeyChecking=no images.tar.gz \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/root/BI/images.tar.gz
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/BI/images.tar.gz
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -60,7 +60,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /root/BI
+            cd /opt/BI
 
             docker load < images.tar.gz
 
