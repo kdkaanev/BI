@@ -30,11 +30,11 @@ jobs:
         run: |
            docker save bi-backend:${{ github.sha }} bi-fastapi:${{ github.sha }} bi-frontend:${{ github.sha }} | gzip > images.tar.gz
 
-      - name: Verify saved image
+      - name: Verify image archive
         run: |
-          echo "workspace:"
-          pwd
-          ls -la 
+          ls -lah images.tar.gz
+          tar -tf images.tar.gz
+
 
       - name: Ensure target dir exists on VPS
         uses: appleboy/ssh-action@v1.0.3
