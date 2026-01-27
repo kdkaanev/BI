@@ -22,8 +22,7 @@ jobs:
           docker build -t bi-fastapi:${{ github.sha }} ./backend/fastapi_app
           docker build -t bi-frontend:${{ github.sha }} ./frontend/vue_app
 
-          ls -lah frontend/vue_app/src/views
-          cat frontend/vue_app/src/views/Login.vue | grep HELLO_FROM_GITHUB
+          
 
 
       - name: Save Docker image
