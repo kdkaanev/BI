@@ -63,7 +63,8 @@ jobs:
 
             docker load < images.tar.gz
 
-            echo "IMAGE_TAG=${{ github.sha }}" > .env
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${{ github.sha }}/" .env || echo "IMAGE_TAG=${{ github.sha }}" >> .env
+
 
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d   
