@@ -57,7 +57,7 @@ async function showInsights() {
     <!-- HEADER -->
     <header class="dashboard-header">
       <div>
-        <h1> Маин Dashboard</h1>
+        <h1>Dashboard</h1>
         <p class="subtitle" v-if="uploaded">
           Dataset: <strong>{{ uploaded.filename }}</strong> ·
           {{ uploaded.row_count }} rows ·
