@@ -42,7 +42,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -51,7 +51,11 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080"
     "http://77.42.94.154",
     "http://77.42.94.154:8080"
+    "https://app.mybi.store",
 ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://app.mybi.store",
 # Application definition
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = False  # за локално
