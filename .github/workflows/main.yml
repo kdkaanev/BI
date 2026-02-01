@@ -20,7 +20,7 @@ jobs:
         run: |
           docker build -t bi-backend:${{ github.sha }} ./backend/django_app
           docker build -t bi-fastapi:${{ github.sha }} ./backend/fastapi_app
-          docker build -t bi-frontend:${{ github.sha }} ./frontend/vue_app
+          docker build --build-arg VITE_API_BASE_URL=https://api.mybi.store -t bi-frontend:${{ github.sha }} ./frontend/vue_app
 
           
 
