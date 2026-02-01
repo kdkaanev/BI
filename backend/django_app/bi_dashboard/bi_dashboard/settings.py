@@ -56,6 +56,7 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://app.mybi.store",
+]
 # Application definition
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = False  # за локално
