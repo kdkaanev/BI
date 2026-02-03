@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-default-secret-key")
 #DEBUG = os.getenv("DEBUG", "True") == "True"
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["api.mybi.store",]
 
 # CORS for local dev
 
@@ -39,12 +39,10 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://app.mybi.store",
-    "http://api.mybi.store",
+  
 ]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
     "https://app.mybi.store",
-    "http://api.mybi.store",
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -97,9 +95,13 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    
-    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_COOKIE": "access",
+    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "None",
 }
+
 
 ROOT_URLCONF = 'bi_dashboard.urls'
 
