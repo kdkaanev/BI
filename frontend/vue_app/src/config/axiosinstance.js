@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const ACCESS_TOKEN_KEY = 'bi_access_token';
 
 const axiosBI = axios.create({
     baseURL: BASE_URL,
@@ -11,7 +12,7 @@ const axiosBI = axios.create({
 
 
 axiosBI.interceptors.request.use((config) => {
-    const token = localStorage.getItem('bi_saas_token');
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -23,7 +24,11 @@ axiosBI.interceptors.request.use((config) => {
 axiosBI.interceptors.response.use((response) => {
     return response;
 }, (error) => {
-    if (error.response && error.response.status === 401) {
+    if (
+        error.response && 
+        error.response.status === 401 &&
+        !window.location.href.includes('/login')
+    ) {
         // Handle unauthorized access, e.g., redirect to login
         window.location.href = '/login';
     }

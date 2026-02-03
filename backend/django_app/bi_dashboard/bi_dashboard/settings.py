@@ -47,13 +47,13 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
-    "x-csrftoken",
+
 ]
 # Application definition
 SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = True  
+SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = False  
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -86,20 +86,16 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.permissions.AllowAny",
+        
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ),
 }
 
 SIMPLE_JWT = {
     
-"AUTH_COOKIE": "access",
-    "AUTH_COOKIE_SECURE": False,
-    "AUTH_COOKIE_HTTP_ONLY": True,
-    "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "None",
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 ROOT_URLCONF = 'bi_dashboard.urls'
