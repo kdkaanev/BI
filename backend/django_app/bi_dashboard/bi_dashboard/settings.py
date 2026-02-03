@@ -30,38 +30,30 @@ DEBUG = os.getenv("DEBUG", "True") == "True"
 ALLOWED_HOSTS = ["*"]
 
 # CORS for local dev
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:80",
-    "http://0.0.0.0:8000",
-    "http://localhost:8080",
-    "http://77.42.94.154",
-    "http://77.42.94.154:8080"
-    
-]
+
 
 CORS_ALLOW_CREDENTIALS = True
 
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:80",
-    "http://localhost:8080"
-    "http://77.42.94.154",
-    "http://77.42.94.154:8080"
     "https://app.mybi.store",
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://app.mybi.store",
 ]
+
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+]
 # Application definition
 SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = False  # за локално
+SESSION_COOKIE_SECURE = True  
 CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True  
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -94,6 +86,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.permissions.AllowAny",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
