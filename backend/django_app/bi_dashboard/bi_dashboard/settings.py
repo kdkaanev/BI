@@ -39,10 +39,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://app.mybi.store",
+    "http://api.mybi.store",
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://app.mybi.store",
+    "http://api.mybi.store",
 ]
 
 CORS_ALLOW_HEADERS = [
