@@ -8,7 +8,7 @@ export const useAuthService = () => {
 
     const login = async (credentials) => {
         try {
-            const response = await axiosBI.post('accounts/login/', credentials);
+            const response = await axiosBI.post('api/accounts/login/', credentials);
             const accessToken = response.data.access;
             const refreshToken = response.data.refresh;
             const decodedToken = jwtDecode(accessToken);
@@ -39,7 +39,7 @@ export const useAuthService = () => {
 
     const register = async (userInfo) => {
         try {
-            const response = await axiosBI.post('accounts/register/', userInfo);
+            const response = await axiosBI.post('api/accounts/register/', userInfo);
             return response;
         } catch (error) {
             throw error;
