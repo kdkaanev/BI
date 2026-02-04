@@ -93,6 +93,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ),
 }
+#da eba mamata
 
 SIMPLE_JWT = {
     "AUTH_COOKIE": "access",
