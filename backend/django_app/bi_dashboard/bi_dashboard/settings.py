@@ -50,6 +50,14 @@ CORS_ALLOW_HEADERS = [
     "content-type",
 
 ]
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
 # Application definition
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = False
