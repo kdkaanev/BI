@@ -1,17 +1,24 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import axiosBI from "../config/axiosinstance.js";
 import { useRouter } from "vue-router";
 import { useUploadStore } from "../store/uploadStore.js";
+import { useAuthStore } from "../store/authStore.js";
 
 const uploadStore = useUploadStore();
-
+const authStore = useAuthStore();
 const router = useRouter();
 
 const loading = ref(false);
 const fileInput = ref(null);
 
 const chooseFile = () => fileInput.value.click();
+
+onMounted(() => {
+  if (!authStore.getCurrentUser()) {
+    router.push("/login");
+  }
+});
 
 const onDrop = (e) => {
   const file = e.dataTransfer.files[0];
@@ -30,7 +37,9 @@ const upload = async (file) => {
   form.append("file", file);
 
   try {
-    const res = await axiosBI.post("api/datasets/upload/", form);
+    const res = await axiosBI.post("api/datasets/upload/", form,
+    
+    );
 
     // 👉 Запазваме данните в Pinia
     uploadStore.setUploadedDataset(res.data);

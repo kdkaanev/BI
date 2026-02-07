@@ -6,7 +6,7 @@ const ACCESS_TOKEN_KEY = 'bi_access_token';
 
 const axiosBI = axios.create({
     baseURL: BASE_URL,
-    withCredentials: true,
+   
   
    
 });

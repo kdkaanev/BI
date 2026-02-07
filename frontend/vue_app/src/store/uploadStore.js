@@ -46,7 +46,7 @@ export const useUploadStore = defineStore('dataset', () => {
       rows_sample: uploaded.value.rows_sample || []
     }
     try {
-      const response = await axiosBI.post('insights/analyze/', payload)
+      const response = await axiosBI.post('api/insights/analyze/', payload)
       insights.value = response.data.insights || []
       kpis.value = response.data.kpis || []
     }
