@@ -38,7 +38,7 @@ async function showInsights() {
       rows_sample: uploaded.value.rows_sample || []
     }
 
-    const res = await axiosBI.post('insights/analyze/', payload)
+    const res = await axiosBI.post('api/insights/analyze/', payload)
 
     kpis.value = res.data.kpis || []
     insights.value = res.data.insights || []
