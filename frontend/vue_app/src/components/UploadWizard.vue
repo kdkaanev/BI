@@ -37,11 +37,7 @@ const upload = async (file) => {
   form.append("file", file);
 
   try {
-    const res = await axiosBI.post("api/datasets/upload/", form,{
-       headers: {
-    Authorization: `Bearer ${localStorage.getItem('bi_saas_token')}`
-  }
-    }
+    const res = await axiosBI.post("api/datasets/upload/", form
     
     );
 
