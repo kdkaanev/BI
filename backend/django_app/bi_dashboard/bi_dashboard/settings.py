@@ -135,7 +135,7 @@ WSGI_APPLICATION = 'bi_dashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if  not DEBUG:
+if DEBUG:
 
     DATABASES = {
         "default": {
