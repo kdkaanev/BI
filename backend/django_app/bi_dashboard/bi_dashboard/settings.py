@@ -206,13 +206,16 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 # FastAPI service URL (used by datasets app to call analysis microservice)
-FASTAPI_ANALYZE_URL = "http://localhost:8001/api/insights/analyze/"
+
+FASTAPI_ANALYZE_URL = "http://localhost:8001/insights/analyze/"
 
 # settings.py
 if DEBUG:
     FASTAPI_URL = "http://localhost:8002"  # адресът на твоя FastAPI microservice за локално развитие
+    FASTAPI_ANALYZE_URL = "http://localhost:8001/insights/analyze/"
 else:
     FASTAPI_URL = os.getenv("FASTAPI_URL")  # адресът на твоя FastAPI microservice
+    FASTAPI_ANALYZE_URL = f"{FASTAPI_URL}/insights/analyze/"
 
 
 
