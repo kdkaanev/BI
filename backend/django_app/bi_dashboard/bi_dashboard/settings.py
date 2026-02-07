@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-default-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = os.getenv("DEBUG", "True") == "True"
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True") == "True"
+#DEBUG = True
 
-ALLOWED_HOSTS = ["api.mybi.store",]
+ALLOWED_HOSTS = ["api.mybi.store","localhost", "127.0.0.1"]
 
 # CORS for local dev
 
@@ -39,10 +39,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://app.mybi.store",
+    "http://localhost:5173/"
+    
   
 ]
 CORS_ALLOWED_ORIGINS = [
     "https://app.mybi.store",
+    "http://localhost:5173",
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -135,7 +138,7 @@ WSGI_APPLICATION = 'bi_dashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if not DEBUG:
+if  DEBUG:
 
     DATABASES = {
         "default": {
@@ -209,7 +212,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 # settings.py
-if not DEBUG:
+if  DEBUG:
     FASTAPI_URL = "http://localhost:8002"  # адресът на твоя FastAPI microservice за локално развитие
     FASTAPI_ANALYZE_URL = "http://localhost:8001/insights/analyze/"
 else:
