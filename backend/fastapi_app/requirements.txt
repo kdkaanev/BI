@@ -1,9 +1,11 @@
 fastapi
 uvicorn[standard]
 python-multipart
-pandas
-openpyxl
+
 python-dateutil
 pydantic
 aiofiles
 openai
+pandas==2.3.3
+numpy==2.3.5
+openpyxl==3.1.5
