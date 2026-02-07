@@ -4,8 +4,9 @@ from .views import DatasetViewSet, InsightAnalyzeView
 
 router = DefaultRouter()
 router.register(r'datasets', DatasetViewSet, basename='dataset')
+router.register(r'insights', InsightAnalyzeView, basename='insight')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api/insights/analyze/', InsightAnalyzeView.as_view(), name='insight-analyze'),
+     # добавяме URL за анализа на insights
 ]
