@@ -215,7 +215,7 @@ if DEBUG:
     FASTAPI_ANALYZE_URL = "http://localhost:8001/insights/analyze/"
 else:
     FASTAPI_URL = os.getenv("FASTAPI_URL")  # адресът на твоя FastAPI microservice
-    FASTAPI_ANALYZE_URL = f"{FASTAPI_URL}/insights/analyze/"
+    FASTAPI_ANALYZE_URL = os.getenv("FASTAPI_ANALYZE_URL",)  # използвай името на услугата в Docker Compose
 
 
 
