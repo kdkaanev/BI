@@ -30,7 +30,7 @@ const upload = async (file) => {
   form.append("file", file);
 
   try {
-    const res = await axiosBI.post("datasets/upload/", form);
+    const res = await axiosBI.post("api/datasets/upload/", form);
 
     // 👉 Запазваме данните в Pinia
     uploadStore.setUploadedDataset(res.data);
