@@ -7,5 +7,5 @@ router.register(r'datasets', DatasetViewSet, basename='dataset')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api/insights/analyze/', InsightAnalyzeView.as_view(), name='insight-analyze'),
+    path('/insights/analyze/', InsightAnalyzeView.as_view(), name='insight-analyze'),
 ]
