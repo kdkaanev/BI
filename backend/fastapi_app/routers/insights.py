@@ -1,10 +1,13 @@
 from http import client
+import pandas as pd
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Any, Dict, List
 from collections import Counter
 from .generate_insights import generate_insights, generate_kpis
 from .insights_ai import generate_ai_insights
+from .charts import build_main_chart
+from .data import detect_dtype, detect_schema
 from openai import OpenAI
 
 from dotenv import load_dotenv
@@ -36,12 +39,17 @@ class InsightsResponse(BaseModel):
 
 @router.post("/analyze")
 async def analyze_insights(payload: InsightsRequest):
+    df = pd.DataFrame(payload.rows_sample)
+    
+    schema = detect_schema(df)
 
     columns = payload.columns
     rows_sample = payload.rows_sample
     
+    
     classic_insights = generate_insights(columns, rows_sample)
     classic_kpis = generate_kpis(columns, rows_sample)
+    main_chart = build_main_chart(df, schema)
     
     try:
         ai_insights = generate_ai_insights(columns, rows_sample)
@@ -56,6 +64,7 @@ async def analyze_insights(payload: InsightsRequest):
     return {
         "insights": classic_insights,
         "kpis": classic_kpis,
+        "chart": main_chart,
     }
 
     

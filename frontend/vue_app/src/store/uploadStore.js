@@ -1,30 +1,25 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axiosBI from '../config/axiosinstance'
+import axiosBI from '../config/axiosinstance.js'
 
 export const useUploadStore = defineStore('dataset', () => {
 
   // State
   const uploaded = ref(null)
-  const insights = ref([])
-  const kpis = ref([])  
-  const loadingInsights = ref(false)
+  const loading = ref(false)
 
-  //getters
+  // Getters
   const hasDataset = computed(() => !!uploaded.value)
 
   // Actions
-  
 
   function setUploadedDataset(data) {
-
     uploaded.value = data
-    sessionStorage.setItem('uploadedData', JSON.stringify(uploaded.value))
+    sessionStorage.setItem('uploadedData', JSON.stringify(data))
   }
+
   function clearData() {
     uploaded.value = null
-    insights.value = []
-    kpis.value = []
     sessionStorage.removeItem('uploadedData')
   }
 
@@ -33,63 +28,32 @@ export const useUploadStore = defineStore('dataset', () => {
     uploaded.value = raw ? JSON.parse(raw) : null
   }
 
-  async function fetchInsights() {
-    if (!uploaded.value) {
-      throw new Error("No dataset uploaded")
-    }
-    loadingInsights.value = true
-    insights.value = []
-    kpis.value = []
+  // 👉 Новата upload логика
+  async function uploadFile(file) {
+    loading.value = true
 
-    const payload = {
-      columns: uploaded.value.columns,
-      rows_sample: uploaded.value.rows_sample || []
-    }
+    const form = new FormData()
+    form.append('file', file)
+
     try {
-      const response = await axiosBI.post('api/insights/analyze/', payload)
-      insights.value = response.data.insights || []
-      kpis.value = response.data.kpis || []
-    }
-    catch (e) {
-      }
-    finally {
-      loadingInsights.value = false
+      const res = await axiosBI.post('api/datasets/upload/', form)
+      setUploadedDataset(res.data)
+      return res.data
+    } catch (err) {
+      console.error('Upload error:', err)
+      throw err
+    } finally {
+      loading.value = false
     }
   }
 
   return {
     uploaded,
+    loading,
+    hasDataset,
     setUploadedDataset,
     loadFromSession,
-    hasDataset,
-    insights,
-    kpis,
-    loadingInsights,
-    fetchInsights,
-    clearData
+    clearData,
+    uploadFile
   }
 })
-// Old Options API style store (for reference)
-
-
-// export const useUploadStore = defineStore('dataset', {
-//   state: () => ({
-//     uploaded: null
-//   }),
-//   actions: {
-//     setUploadedDataset(data) {
-//       this.uploaded = data
-//       sessionStorage.setItem('uploadedData', JSON.stringify(data))
-//       const rows_sample = data.columns.sample_values || []
-//       console.log("Uploaded dataset stored:", {
-//         dataset_id: data.dataset_id,
-//         columns: data.columns,
-//         rows_sample: rows_sample
-//       })
-//     },
-//     loadFromSession() {
-//       const raw = sessionStorage.getItem('uploadedData')
-//       this.uploaded = raw ? JSON.parse(raw) : null
-//     }
-//   }
-// })

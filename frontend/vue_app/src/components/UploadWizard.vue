@@ -4,7 +4,6 @@ import axiosBI from "../config/axiosinstance.js";
 import { useRouter } from "vue-router";
 import { useUploadStore } from "../store/uploadStore.js";
 import { useAuthStore } from "../store/authStore.js";
-
 const uploadStore = useUploadStore();
 const authStore = useAuthStore();
 const router = useRouter();
@@ -31,29 +30,14 @@ const onFileChange = (e) => {
 };
 
 const upload = async (file) => {
-  loading.value = true;
-
-  const form = new FormData();
-  form.append("file", file);
-
   try {
-    const res = await axiosBI.post("api/datasets/upload/", form
-    
-    );
-
-    // 👉 Запазваме данните в Pinia
-    uploadStore.setUploadedDataset(res.data);
-   
-
-    // 👉 Навигираме към Dashboard
-    router.push("/dashboard");
-
+    await uploadStore.uploadFile(file)
+    router.push('/dashboard')
   } catch (err) {
-    alert("Upload error: " + (err.response?.data?.detail || err.message));
-  } finally {
-    loading.value = false;
+    alert('Upload error: ' + (err.response?.data?.detail || err.message))
   }
-};
+}
+
 </script>
 
 <template>

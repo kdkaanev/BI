@@ -18,6 +18,14 @@ class UploadResponse(BaseModel):
     columns: List[ColumnInfo]
     rows_sample: List[Dict[str, Any]]
     row_count: int
+    
+def try_parse_date(series: pd.Series) -> bool:
+    try:
+        parsed = pd.to_datetime(series.dropna().head(50), errors='coerce')
+        success_ratio = parsed.notna().mean()
+        return success_ratio > 0.7
+    except Exception:
+        return False
 
 def detect_dtype(series: pd.Series) -> str:
     if pd.api.types.is_datetime64_any_dtype(series):
@@ -42,6 +50,23 @@ def detect_dtype(series: pd.Series) -> str:
         return "text"
     return "text"
 
+def detect_schema(df: pd.DataFrame) -> dict:
+    schema = {
+        "numeric": [],
+        "date": [],
+        "categorical": [],
+        "dimension": [],
+        "boolean": [],
+        "text": [],
+    }
+
+    for column in df.columns:
+        dtype = detect_dtype(df[column])
+        schema[dtype].append(column)
+
+    return schema
+
+
 def smart_sample(df, n):
     
     if len(df) <= n:
@@ -63,6 +88,31 @@ def smart_sample(df, n):
     sampled_df = pd.concat([even_part, random_part])
     
     return sampled_df.sample(frac=1)
+
+def choose_chart(schema, dataframe, main_metric):
+    date_cols = schema.get("date", [])
+    cat_cols = schema.get("categorical", [])
+
+    # 1. Time chart
+    if date_cols:
+        return {
+            "type": "line",
+            "x": date_cols[0],
+            "y": main_metric,
+        }
+
+    # 2. Category chart
+    for col in cat_cols:
+        unique_count = dataframe[col].nunique()
+        if unique_count <= 20:
+            return {
+                "type": "bar",
+                "x": col,
+                "y": main_metric,
+            }
+
+    return None
+
 
 @router.post("/upload/", response_model=UploadResponse)
 async def upload_file(file: UploadFile = File(...)):

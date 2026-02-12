@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import { useAuthService } from '../services/authServices'
 
 export const useAuthStore = defineStore('auth', () => {
+const router = useRouter()
     const accessToken = ref(null)
     const refreshToken = ref(null)
     const user = ref(null)
@@ -31,6 +32,9 @@ export const useAuthStore = defineStore('auth', () => {
     const logout = () => {
         localStorage.removeItem('bi_saas_token')
         user.value = null
+        accessToken.value = null
+        refreshToken.value = null 
+        router.push('/login')
         
     }
 

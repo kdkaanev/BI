@@ -676,16 +676,18 @@ def generate_insights(columns, rows):
         
     
         
-    insights += dataset_overview(columns, rows)  
+    
     insights += revenue_by_category(columns, rows)
     insights += quantity_concentration(columns, rows)
+    insights += top_revenue_dimension(columns, rows)
     insights += price_quantity_mismatch(columns, rows)
     insights += sales_by_date(columns, rows)
     insights += data_quality_insights(columns, rows)
     insights += total_and_average_revenue(columns, rows)
-    insights += top_revenue_dimension(columns, rows)
+    
     insights += quantity_price_consistency(columns, rows)
     insights += missing_data_insight(columns, rows)
+    insights += dataset_overview(columns, rows)  
     
     if not insights:
         insights.append({
