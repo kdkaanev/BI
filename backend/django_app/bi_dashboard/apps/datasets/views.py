@@ -116,4 +116,15 @@ class InsightAnalyzeView(APIView):
         except Exception as e:
             return Response({"detail": "FastAPI error", "error": str(e)}, status=502) 
         
-        return Response(resp.json(), status=200)
+        result = resp.json()
+        dataset.kpis = result.get("kpis", {})
+        dataset.insights = result.get("insights", [])
+        dataset.chart = result.get("chart", {})
+        dataset.save()
+        
+        return Response({
+            "dataset_id": dataset.id,
+            "kpis": dataset.kpis,
+            "insights": dataset.insights,
+            "chart": dataset.chart
+        }, status=200)

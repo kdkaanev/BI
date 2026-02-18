@@ -1,73 +1,98 @@
 <script setup>
 
-import UploadWizard from './components/UploadWizard.vue';
-import Dashboard from './views/Dashboard.vue';
+import UploadWizard from '../src/views/UploadWizard.vue';
+
 import { onMounted, ref } from 'vue';
 import Login from './views/Login.vue';
+import SideBar from './components/layout/SideBar.vue';
+import TopBar from './components/layout/TopBar.vue'; 
 
 
 import { useAuthStore } from './store/authStore';
 const authStore = useAuthStore();
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
-const logout = () => {
-  authStore.logout();
-  router.push('/');
-};
 
 onMounted(() => {
-  if (!authStore.getCurrentUser()) {
-    router.push('/');
-  }
-  authStore.getCurrentUser();
+  authStore.initAuth();
 });
-
+const sidebarOpen = ref(false);
 </script>
 
 <template>
   <div id="app">
-    <div class="nav">
+    <SideBar 
+      :open="sidebarOpen"
+      @close="sidebarOpen = false"
 
-      <img alt="BI SaaS logo" class="logo" src="./assets/logo.png" />
-      <button v-if="authStore.getCurrentUser()" @click="logout" class="btn primary">logout</button>
-    
+    />
+    <div class="main-area">
+      <TopBar 
+        :title="$route.meta.title || 'Dashboard'"
+        @toggleSidebar="sidebarOpen = true" />
+       <router-view />
+      
     </div>
-    <router-view />
+    <div
+      v-if="sidebarOpen"
+      class="overlay"
+      @click="sidebarOpen = false"
+    ></div>
+    
   </div>
 
 
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style>
+@media (max-width: 900px) {
+  .content {
+    padding: 20px;
+    gap: 24px;
+  }
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .insights-row {
+    grid-template-columns: 1fr;
+    
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+@media (max-width: 600px) {
+  .content {
+    padding: 16px;
+    gap: 20px;
+  }
+  .kpi-row {
+    grid-template-columns: 1fr;
+    
+  }
 }
-.nav {
+#app {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f9fafb;
+  width: 100%;
 }
-.btn {
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-}
+.main-area {
+  flex: 1;
+  margin-left: 6rem;
+  display: flex;
+  flex-direction: column;
 
-.btn.primary {
-  background: #2563eb;
-  color: white;
 }
-
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 40;
+}
+@media (max-width: 768px) {
+  .main-area {
+    margin-left: 0;
+  }
+}
 </style>

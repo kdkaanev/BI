@@ -16,6 +16,19 @@ class Dataset(models.Model):
         null=True,
         blank=True
         )
+    
+    kpis = models.JSONField(
+        null=True,
+        blank=True
+        )  # {"kpi_name": value, ...}
+    insights = models.JSONField(
+        null=True,
+        blank=True
+        )  # [{"title": ..., "text": ..., "severity": ...}, ...]    
+    chart = models.JSONField(
+        null=True,
+        blank=True
+        )  # {"type": "bar", "data": {...}, "options": {...}}
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -37,7 +50,7 @@ class DatasetColumn(models.Model):
 class DatasetInsight(models.Model):
     dataset = models.ForeignKey(
         Dataset, 
-        related_name='insights', 
+        related_name='insight_details', 
         on_delete=models.CASCADE
         )
     title = models.CharField(max_length=255)
@@ -50,3 +63,5 @@ class DatasetInsight(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.severity})"
+
+

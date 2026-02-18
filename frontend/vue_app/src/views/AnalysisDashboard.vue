@@ -1,9 +1,9 @@
 <script setup>
-import Sidebar from "../components/SideBar.vue";
-import Topbar from "../components/TopBar.vue";
-import KpiCard from "../components/KpiRow.vue";
-import InsightCard from "../components/InsightsRow.vue";
-import ChartCard from "../components/charts/ChartCart.vue";
+import Sidebar from "../components/layout/SideBar.vue";
+import Topbar from "../components/layout/TopBar.vue";
+import KpiCard from "../components/cards/KpiRow.vue";
+import InsightCard from "../components/cards/InsightsRow.vue";
+import ChartCard from "../components/cards/ChartCart.vue";
 import LineChart from "../components/charts/LineChart.vue";
 import BarChart from "../components/charts/BarChart.vue";
 
@@ -64,10 +64,10 @@ async function showInsights() {
 
 <template>
   <div class="app-layout">
-    <Sidebar />
+    
 
     <div class="main-area">
-      <Topbar />
+
 
       <main class="content">
         <!-- Page header -->
@@ -118,7 +118,7 @@ async function showInsights() {
 
 
         <!-- Data preview -->
-         <section class="data-preview">
+         <section class="card data-preview">
   <h2>Data preview</h2>
 
   <div class="table-wrapper">
@@ -163,6 +163,8 @@ async function showInsights() {
 
 
 <style scoped>
+
+
 .app-layout {
   display: flex;
   min-height: 100vh;
@@ -179,9 +181,10 @@ async function showInsights() {
 /* Content */
 .content {
   padding: 32px;
+  width: 100%;
   max-width: 1080px;
   margin: 0 auto;
-  width: 100%;
+  
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -277,9 +280,54 @@ async function showInsights() {
   position: relative;
 }
 .table-wrapper {
+  width: 100%;
   overflow-x: auto;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
+}
+@media (max-width: 900px) {
+  .content {
+    padding: 20px;
+    gap: 24px;
+  }
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .insights-row {
+    grid-template-columns: 1fr;
+    
+}
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 16px;
+  }
+}
+@media (max-width: 600px) {
+  .content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 16px !important;
+    margin: 0 !important;
+  }
+  .kpi-row {
+    grid-template-columns: 1fr;
+    
+  }
+}
+@media (max-width: 600px) {
+  .chart-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .data-preview table {
+    min-width: 600px;
+  }
 }
 
 </style>

@@ -10,9 +10,7 @@ const loginData = ref({
 })
 
 
-function goUploadWizard() {
-  router.push('/upload')
-}
+
 function goToRegister() {
   router.push('/register')
 }
@@ -24,17 +22,13 @@ const onLogin = async () => {
       username: loginData.value.username,
       password: loginData.value.password
     })
-    goUploadWizard()
+   
   } catch (error) {
     console.error('Login failed:', error)
     alert('Login failed. Please check your credentials and try again.')
   }
 }
-onMounted(() => {
-  if (authStore.getCurrentUser()) {
-    goUploadWizard()
-  }
-})
+
 
 </script>
 
@@ -64,13 +58,15 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 .page.center {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #f5f5f5;
-  margin: 0;
+  max-width: 600px;
+  margin: 40px auto;
 }
 .card {
   background: white;

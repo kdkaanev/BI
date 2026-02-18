@@ -14,9 +14,7 @@ const fileInput = ref(null);
 const chooseFile = () => fileInput.value.click();
 
 onMounted(() => {
-  if (!authStore.getCurrentUser()) {
-    router.push("/login");
-  }
+  authStore.initAuth();
 });
 
 const onDrop = (e) => {
@@ -33,6 +31,7 @@ const upload = async (file) => {
   try {
     await uploadStore.uploadFile(file)
     router.push('/dashboard')
+    
   } catch (err) {
     alert('Upload error: ' + (err.response?.data?.detail || err.message))
   }
@@ -64,9 +63,12 @@ const upload = async (file) => {
       @change="onFileChange"
     />
 
-    <button class="upload-btn" :disabled="loading" @click="chooseFile">
+    <div class="links">
+      <button class="upload-btn" :disabled="loading" @click="chooseFile">
       {{ loading ? "Uploading..." : "Upload File" }}
     </button>
+    <router-link to="/dashboard" class="dashboard-link">Go to Dashboard</router-link>
+    </div>
   </div>
 </template>
 <style scoped>
@@ -114,5 +116,19 @@ const upload = async (file) => {
 .upload-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+.dashboard-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: #4f46e5;
+  text-decoration: none;
+}
+.dashboard-link:hover {
+  text-decoration: underline;
+}
+.links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

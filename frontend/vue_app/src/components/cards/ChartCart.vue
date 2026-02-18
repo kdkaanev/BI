@@ -39,7 +39,7 @@ const sizeClass = computed(() => {
 </template>
 
 
-<style scoped>
+<style >
 .chart-card {
   background: white;
   border: 1px solid #e5e7eb;
@@ -47,6 +47,8 @@ const sizeClass = computed(() => {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Header */
@@ -79,6 +81,8 @@ const sizeClass = computed(() => {
   flex: 1;
   height: 100%;
   position: relative;
+  width: 100%;
+  min-height: 0;
 }
 
 /* Sizes */
@@ -93,4 +97,15 @@ const sizeClass = computed(() => {
 .size-large {
   height: 360px;
 }
+@media (max-width: 600px) {
+  .size-large {
+    height: 240px;
+    
+  }
+  .chart-card{
+    padding: 16px;
+  }
+}
 </style>
+
+

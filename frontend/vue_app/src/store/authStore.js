@@ -1,67 +1,74 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import axiosBI from '../config/axiosinstance'
-import { jwtDecode } from 'jwt-decode'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthService } from "../services/authServices";
 
-import { useRouter } from 'vue-router'
-import { useAuthService } from '../services/authServices'
+export const useAuthStore = defineStore("auth", () => {
+  const router = useRouter();
+  const authService = useAuthService();
 
-export const useAuthStore = defineStore('auth', () => {
-const router = useRouter()
-    const accessToken = ref(null)
-    const refreshToken = ref(null)
-    const user = ref(null)
-    const isInitialized = ref(false)
+  const accessToken = ref(null);
+  const refreshToken = ref(null);
+  const user = ref(null);
+  const isInitialized = ref(false);
 
-    const loginUser = async (credentials) => {
-        try {
-             const { accessToken: access, refreshToken: refresh, decodedToken } = await useAuthService().login(credentials)
-            accessToken.value = access
-            console.log('REFRESH TOKEN:', refresh)
-            console.log('DECODED TOKEN:', decodedToken)
-            console.log('ACCESS TOKEN:', access)
-            refreshToken.value = refresh
-            user.value = decodedToken
-            localStorage.setItem('bi_saas_token', access)
-            return { accessToken: access, refreshToken: refresh, decodedToken } 
-        } catch (error) {
-            throw error 
-        }
+  const loginUser = async (credentials) => {
+    try {
+      const { accessToken: access, refreshToken: refresh } =
+        await authService.login(credentials);
+
+      accessToken.value = access;
+      refreshToken.value = refresh;
+
+      // взимаме реалния user от /me
+      user.value = await authService.fetchMe();
+
+      router.push("/upload");
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("bi_saas_token");
+    localStorage.removeItem("bi_saas_refresh");
+
+    user.value = null;
+    accessToken.value = null;
+    refreshToken.value = null;
+
+    router.push("/");
+  };
+
+  const initAuth = async () => {
+    const token = localStorage.getItem("bi_saas_token");
+
+    if (!token) {
+      isInitialized.value = true;
+      return;
     }
 
-    const logout = () => {
-        localStorage.removeItem('bi_saas_token')
-        user.value = null
-        accessToken.value = null
-        refreshToken.value = null 
-        router.push('/login')
-        
+    accessToken.value = token;
+
+    try {
+      user.value = await authService.fetchMe();
+    } catch {
+      logout();
     }
 
-    const getCurrentUser = () => {
-        if (!user.value) {
-            const token = localStorage.getItem('bi_saas_token')
-            if (token) {
-                user.value = jwtDecode(token)
-            }
-        }
-        return user.value
-    }
+    isInitialized.value = true;
+  };
 
-    const registerUser = async (userInfo) => {
-        try {
-            const response = await useAuthService().register(userInfo)
-            return response
-        } catch (error) {
-            throw error
-        }
-    }
+  const registerUser = async (userInfo) => {
+    return await authService.register(userInfo);
+  };
 
-    return {
-        loginUser,
-        logout,
-        getCurrentUser,
-        registerUser,
-        user,
-    }
-})  
+  return {
+    loginUser,
+    logout,
+    initAuth,
+    registerUser,
+    user,
+    isInitialized,
+  };
+});

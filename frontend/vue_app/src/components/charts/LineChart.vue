@@ -28,6 +28,12 @@ const props = defineProps({
 
 const canvas = ref(null);
 let chartInstance = null;
+const handleResize = () => {
+  if (chartInstance) {
+    chartInstance.resize();
+  }
+};
+let resizeObserver = null;
 
 const renderChart = () => {
   if (chartInstance) {
@@ -54,14 +60,39 @@ const renderChart = () => {
     },
   });
 };
+const observeResize = () => {
+  if (!canvas.value) return;
 
-onMounted(renderChart);
+  const parent = canvas.value.parentElement;
 
-watch(() => props.data, renderChart);
+  resizeObserver = new ResizeObserver(() => {
+    if (chartInstance) {
+      chartInstance.resize();
+    }
+  });
+
+  resizeObserver.observe(parent);
+};
+
+
+onMounted(() => {
+  renderChart();
+ observeResize();
+});
+
+
+watch(
+  () => [props.labels, props.data],
+  renderChart,
+  { deep: true }
+);
 
 onBeforeUnmount(() => {
   if (chartInstance) {
     chartInstance.destroy();
+  }
+  if (resizeObserver) {
+    resizeObserver.disconnect();
   }
 });
 </script>
@@ -74,6 +105,8 @@ onBeforeUnmount(() => {
  canvas {
    width: 100% !important;
    height: 100% !important; 
+    display: block;
+  max-width: 100% !important;
   }
   </style>
 

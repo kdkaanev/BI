@@ -1,56 +1,31 @@
 import axiosBI from "../config/axiosinstance";
 
-import { ref } from "vue";
-import { jwtDecode } from "jwt-decode";
-
 export const useAuthService = () => {
-    const user = ref(null);
 
-    const login = async (credentials) => {
-        try {
-            const response = await axiosBI.post('api/accounts/login/', credentials);
-            const accessToken = response.data.access;
-            const refreshToken = response.data.refresh;
-            const decodedToken = jwtDecode(accessToken);
-           
+  const login = async (credentials) => {
+    const response = await axiosBI.post("api/accounts/login/", credentials);
 
-         
-            return { accessToken, refreshToken, decodedToken };
-        } catch (error) {
-            throw error;
-        }
-    };
+    const accessToken = response.data.access;
+    const refreshToken = response.data.refresh;
 
-    const logout = () => {
-        localStorage.removeItem('bi_saas_token');
-        user.value = null;
-        window.location.href = '/login';
-    };
+    localStorage.setItem("bi_saas_token", accessToken);
+    localStorage.setItem("bi_saas_refresh", refreshToken);
 
-    const getCurrentUser = () => {
-        if (!user.value) {
-            const token = localStorage.getItem('bi_saas_token');
-            if (token) {
-                user.value = jwtDecode(token);
-            }
-        }
-        return user.value;
-    };
+    return { accessToken, refreshToken };
+  };
 
-    const register = async (userInfo) => {
-        try {
-            const response = await axiosBI.post('api/accounts/register/', userInfo);
-            return response;
-        } catch (error) {
-            throw error;
-        }
-    };  
+  const fetchMe = async () => {
+    const response = await axiosBI.get("api/accounts/me/");
+    return response.data;
+  };
 
-    return {
-        login,
-        logout,
-        getCurrentUser,
-        register,
-        user,
-    };
-};  
+  const register = async (userInfo) => {
+    return await axiosBI.post("api/accounts/register/", userInfo);
+  };
+
+  return {
+    login,
+    fetchMe,
+    register,
+  };
+};
