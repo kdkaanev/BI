@@ -120,7 +120,13 @@ class InsightAnalyzeView(APIView):
         dataset.kpis = result.get("kpis", {})
         dataset.insights = result.get("insights", [])
         dataset.chart = result.get("chart", {})
+        print("KPIS:", dataset.kpis)
+        print("INSIGHTS:", dataset.insights)
+        print("CHART:", dataset.chart)
         dataset.save()
+        dataset.refresh_from_db()
+        
+        print("AFTER SAVE:", dataset.kpis)
         
         return Response({
             "dataset_id": dataset.id,

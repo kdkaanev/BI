@@ -16,19 +16,6 @@ class Dataset(models.Model):
         null=True,
         blank=True
         )
-    
-    kpis = models.JSONField(
-        null=True,
-        blank=True
-        )  # {"kpi_name": value, ...}
-    insights = models.JSONField(
-        null=True,
-        blank=True
-        )  # [{"title": ..., "text": ..., "severity": ...}, ...]    
-    chart = models.JSONField(
-        null=True,
-        blank=True
-        )  # {"type": "bar", "data": {...}, "options": {...}}
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -63,5 +50,31 @@ class DatasetInsight(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.severity})"
+    
+    
+class Analysis(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('processing', 'Processing'),
+    ]
+    dataset = models.ForeignKey(
+        Dataset, 
+        related_name='analyses', 
+        on_delete=models.CASCADE,
+        
+        )
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES,
+        default='pending'
+        )  # pending / completed / failed
+    insights = models.JSONField(default=list, blank=True, null=True)
+    chart = models.JSONField(default=dict, blank=True, null=True)
+    kpis = models.JSONField(default=dict, blank=True, null=True)
+    
+    error_message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
