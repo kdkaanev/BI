@@ -5,101 +5,109 @@ import { storeToRefs } from "pinia";
 import axiosBI from "../config/axiosinstance";
 
 export const useKpisAndInsightsStore = defineStore("kpisAndInsights", () => {
+
   const uploadStore = useUploadStore();
   const { uploaded } = storeToRefs(uploadStore);
+
   const insights = ref([]);
   const kpis = ref([]);
   const chart = ref(null);
+
   const loadingInsights = ref(false);
+  const analysisId = ref(null);
+  const status = ref(null);
 
-  const hasDataset = computed(() => !!uploadStore.uploaded);
+  const hasDataset = computed(() => !!uploaded.value);
 
+  // STEP 1: trigger analysis
   const fetchInsights = async () => {
-    console.log("Starting fetchInsights...");
-    if (!uploaded.value) {
-      throw new Error("No dataset uploaded");
-    }
-    loadingInsights.value = true;
-   
 
-    const payload = {
-      columns: uploaded.value.columns,
-      rows_sample: uploaded.value.rows_sample || [],
-    };
-    try {
-      console.log("Sending insights request with payload:", payload); 
-      const response = await axiosBI.post("api/insights/analyze/", payload);
-      console.log("Received insights response:", response.data);
-      insights.value = response.data.insights || [];
-      kpis.value = response.data.kpis || [];
-      chart.value = response.data.chart || null;
-    } catch (e) {
-console.error("Error fetching insights:", e);
-    } finally {
-      loadingInsights.value = false;
+    if (!uploaded.value?.dataset_id) {
+      throw new Error("No dataset id");
     }
-  }
+
+    loadingInsights.value = true;
+
+    try {
+
+      const response = await axiosBI.post(
+        `api/datasets/${uploaded.value.dataset_id}/analyze/`
+      );
+
+      analysisId.value = response.data.analysis_id;
+      status.value = response.data.status;
+
+      // start polling
+      pollAnalysis();
+
+    } catch (e) {
+
+      console.error("Error triggering analysis:", e);
+      loadingInsights.value = false;
+
+    }
+
+  };
+
+  // STEP 2: poll until completed
+  const pollAnalysis = async () => {
+
+    if (!analysisId.value) return;
+
+    try {
+
+      const response = await axiosBI.get(
+        `api/analyses/${analysisId.value}/`
+      );
+
+      status.value = response.data.status;
+
+      if (status.value === "completed") {
+
+        insights.value = response.data.insights || [];
+        kpis.value = response.data.kpis || [];
+        chart.value = response.data.chart || null;
+
+        loadingInsights.value = false;
+
+        return;
+
+      }
+
+      if (status.value === "failed") {
+
+        console.error("Analysis failed");
+        loadingInsights.value = false;
+
+        return;
+
+      }
+
+      // still processing → poll again
+      setTimeout(pollAnalysis, 2000);
+
+    } catch (e) {
+
+      console.error("Polling error:", e);
+      loadingInsights.value = false;
+
+    }
+
+  };
 
   return {
+
     insights,
     kpis,
     chart,
+
     loadingInsights,
-    hasDataset,   
-    fetchInsights
-  }
-}
-//   state: () => ({
-//     insights: [],
-//     kpis: [],
-//     loadingInsights: false,
-//     uploaded: null,
-//   }),
-//   getters: {
-//     hasDataset() {
-//       return !!this.uploaded;
-//     },
-//   },
-//   setup() {
-//     const uploadStore = useUploadStore()
-//     const insights = ref([])
-//     const kpis = ref([])
-//     const loadingInsights = ref(false)
-//     const uploaded = ref(null)
+    hasDataset,
 
-//     return {
-//       insights,
-//       kpis,
-//       loadingInsights,
-//       uploaded,
-//     }   
-//   }),
-//   actions: {
-//     async fetchInsights() {
-//       this.loadingInsights = true
-//       this.insights = []
-//       this.kpis = []
-//       try {
-//         const payload = {
-//           columns: this.uploaded.columns,
-//           rows_sample: this.uploaded.rows_sample || []
-//         }
-//         const response = await axiosBI.post('api/insights/analyze/', payload)
-//         this.insights = response.data.insights || []
-//         this.kpis = response.data.kpis || []
-//       }
-//       catch (e) {
-//       }
-//       finally {
-//         this.loadingInsights = false
-//       }
-  
-// },
-//     setUploadedDataset(data) {
+    fetchInsights,
 
-//       this.uploaded = data
-//       sessionStorage.setItem('uploadedData', JSON.stringify(this.uploaded))
-//     }
-//   },
-// })
-)
+    status
+
+  };
+
+});

@@ -4,7 +4,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.conf import settings
-from .models import Dataset, DatasetColumn
+from .models import Dataset, DatasetColumn, Analysis
 import requests
 from .serializers import DatasetSerializer
 from rest_framework.views import APIView
@@ -57,9 +57,12 @@ class DatasetViewSet(viewsets.ModelViewSet):
         data = resp.json()
         row_count = data.get("row_count")
         columns = data.get("columns", [])
+        row_sample = data.get("rows_sample", [])
 
         # 3️⃣ Записваме row_count и колоните
         dataset.row_count = row_count
+        dataset.row_sample = row_sample
+        
         dataset.save()
 
         dataset.columns.all().delete()
@@ -84,47 +87,69 @@ class DatasetViewSet(viewsets.ModelViewSet):
 class InsightAnalyzeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
-    def post(self, request):
-        user = request.user
-        rows_sample = request.data.get("rows_sample", [])
-        
-        rows_sample = [
-            r for r in rows_sample if isinstance(r, dict) and any(v is not None for v in r.values())
-        ]
-        
-        print("DJANGO rows_sample:", rows_sample[:3])
+    def post(self, request,dataset_id):
+       
 
         
         
-        dataset = Dataset.objects.filter(owner=user).order_by("-created_at").first()
+        dataset = Dataset.objects.get(
+            id=dataset_id, 
+            owner=request.user
+        )
+        analysis = Analysis.objects.create(dataset=dataset, status='processing')
         
-        if not dataset:
-            return Response({"detail": "No dataset found"}, status=404)
-        
-        columns = list(dataset.columns.values("name", "dtype"))
-        
-        
-        payload = {
-            
-            "columns": columns,
-            "rows_sample": rows_sample
-        }
+ 
         
         try:
-            resp = requests.post(f"{settings.FASTAPI_URL}/insights/analyze/", json=payload, timeout=60)
-            resp.raise_for_status()
+            
+            payload = {
+                "columns": list(dataset.columns.values("name", "dtype")),
+                "rows_sample": dataset.row_sample or []
+            }
+            resp = requests.post(
+                f"{settings.FASTAPI_URL}/insights/analyze/",
+                json=payload,
+            )
+            print("STATUS:", resp.status_code)
+            print("TEXT:", resp.text)
+            result = resp.json()
+            
+            
+            print("FASTAPI RESULT:", result) 
+            
+            analysis.kpis = result.get("kpis")
+            analysis.insights = result.get("insights")
+            analysis.chart = result.get("chart")
+            analysis.status = 'completed'
+
+            analysis.save()
+            
+            print("SAVED KPIS:", analysis.kpis)
         except Exception as e:
-            return Response({"detail": "FastAPI error", "error": str(e)}, status=502) 
+            analysis.status = 'failed'
+            error_message = str(e)
         
-        result = resp.json()
-        dataset.kpis = result.get("kpis", {})
-        dataset.insights = result.get("insights", [])
-        dataset.chart = result.get("chart", {})
-        dataset.save()
+        
         
         return Response({
-            "dataset_id": dataset.id,
-            "kpis": dataset.kpis,
-            "insights": dataset.insights,
-            "chart": dataset.chart
-        }, status=200)
+            "analysis_id": analysis.id,
+            "status": analysis.status,
+        }   
+        )
+class AnalysisDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, analysis_id):
+        analysis = Analysis.objects.get(
+            id=analysis_id, 
+            dataset__owner=request.user
+        )
+        
+        return Response({
+            "id": analysis.id,
+            "status": analysis.status,
+            "kpis": analysis.kpis,
+            "insights": analysis.insights,
+            "chart": analysis.chart,
+            "created_at": analysis.created_at,
+        })

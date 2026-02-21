@@ -12,6 +12,7 @@ const loginData = ref({
 
 
 function goToRegister() {
+  console.log('Navigating to registration page')
   router.push('/register')
 }
 
