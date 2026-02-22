@@ -1,0 +1,116 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - bi
+
+  redis:
+    image: redis:7-alpine
+    container_name: bi_redis
+    restart: always
+    networks:
+      - bi
+  
+  backend:
+    image: bi-backend:${IMAGE_TAG}
+    container_name: bi_backend
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.backend.rule=Host(`api.mybi.store`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=le"
+
+      - "traefik.http.routers.backend-http.rule=Host(`api.mybi.store`)"
+      - "traefik.http.routers.backend-http.entrypoints=web"
+      - "traefik.http.routers.backend-http.middlewares=redirect-to-https"
+    depends_on:
+      - db
+    command: >
+      sh -c "
+      cd bi_dashboard/ && python3 manage.py migrate &&
+      gunicorn bi_dashboard.wsgi:application
+      --bind 0.0.0.0:8000      --workers 3
+      "
+    networks:
+      - bi
+      - traefik
+    restart: always
+
+  celery:
+    image: bi-backend:${IMAGE_TAG}
+    container_name: bi_celery
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
+      - fastapi
+    command: >
+      sh -c "
+      cd bi_dashboard/ &&
+      celery -A bi_dashboard worker --loglevel=info
+      "
+    networks:
+      - bi
+    restart: always
+
+  fastapi:
+    image: bi-fastapi:${IMAGE_TAG}
+    container_name: bi_fastapi
+    env_file:
+      - .env
+    networks:
+      - bi
+   
+    restart: always
+
+
+  frontend:
+    image: bi-frontend:${IMAGE_TAG}
+    container_name: bi_frontend
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+
+      # HTTPS
+      - "traefik.http.routers.frontend.rule=Host(`app.mybi.store`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=le"
+
+      # HTTP → HTTPS
+      - "traefik.http.routers.frontend-http.rule=Host(`app.mybi.store`)"
+      - "traefik.http.routers.frontend-http.entrypoints=web"
+      - "traefik.http.routers.frontend-http.middlewares=redirect-to-https"
+
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+    depends_on:
+      - backend
+    networks:
+      - bi
+      - traefik
+    restart: always
+  
+
+
+  
+volumes:
+  pgdata:
+
+networks:
+  bi:
+    name: bi_network
+    driver: bridge
+
+  traefik:
+    external: true
