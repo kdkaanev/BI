@@ -233,5 +233,23 @@ else:
 
 
 CELERY_ACCEPT_CONTENT = ["json"]
-
 CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+CELERY_TIMEZONE = "UTC"
+
+# Critical for AI workloads
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+
+# prevents duplicate task execution
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+
+# task time limits (important for OpenAI calls)
+CELERY_TASK_TIME_LIMIT = 600
+CELERY_TASK_SOFT_TIME_LIMIT = 540
+
+# prevents memory leaks over time
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 50
+
+
