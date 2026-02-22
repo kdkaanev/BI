@@ -41,6 +41,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://app.mybi.store",
     "http://localhost:5173/"
     "http://127.0.0.1:8000/"
+    "https://api.mybi.store",
     
   
 ]
@@ -64,10 +65,13 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 # Application definition
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = False  
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = True  
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
